@@ -89,7 +89,8 @@ export default async function Home() {
     Boolean(item.href),
   );
 
-  const [lead, ...rest] = projects;
+  const featured = projects.filter((project) => project.featured);
+  const rest = projects.filter((project) => !project.featured);
 
   return (
     <>
@@ -289,69 +290,83 @@ export default async function Home() {
                 blurb="A few systems worth describing in more detail than a bullet point."
               />
 
-              {/* lead project */}
-              {lead ? (
-                <article className="group mb-5 overflow-hidden rounded-2xl border border-border bg-surface transition hover:border-accent/40">
-                  <div className="grid md:grid-cols-2">
-                    {lead.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={lead.imageUrl}
-                        alt={lead.title}
-                        className="h-56 w-full object-cover md:h-full"
-                      />
-                    ) : (
-                      <div className="hero-glow relative hidden min-h-56 overflow-hidden bg-surface-2 md:block">
-                        <div className="grid-bg absolute inset-0" />
-                      </div>
-                    )}
-
-                    <div className="flex flex-col p-7">
-                      <span className="mb-3 w-fit rounded-md bg-accent/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-accent">
-                        Featured
-                      </span>
-                      <h3 className="text-xl font-medium">{lead.title}</h3>
-                      <p className="mt-3 text-sm leading-relaxed text-muted">{lead.summary}</p>
-                      {lead.description ? (
-                        <p className="mt-3 text-sm leading-relaxed text-muted/80">
-                          {lead.description}
-                        </p>
-                      ) : null}
-
-                      <div className="mt-5 flex flex-wrap gap-1.5">
-                        {splitTech(lead.techStack).map((tech) => (
-                          <Tag key={tech}>{tech}</Tag>
-                        ))}
+              {/* featured projects get the wide treatment, with full write-up */}
+              <div className="mb-5 space-y-5">
+                {featured.map((project, index) => (
+                  <article
+                    key={project.id}
+                    className="group overflow-hidden rounded-2xl border border-border bg-surface transition hover:border-accent/40"
+                  >
+                    <div className="grid md:grid-cols-2">
+                      <div className={index % 2 === 1 ? "md:order-2" : undefined}>
+                        {project.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={project.imageUrl}
+                            alt={project.title}
+                            className="h-56 w-full object-cover md:h-full"
+                          />
+                        ) : (
+                          <div className="hero-glow relative hidden h-full min-h-56 overflow-hidden bg-surface-2 md:block">
+                            <div className="grid-bg absolute inset-0" />
+                          </div>
+                        )}
                       </div>
 
-                      {lead.liveUrl || lead.repoUrl ? (
-                        <div className="mt-6 flex items-center gap-4 border-t border-border/60 pt-5">
-                          {lead.liveUrl ? (
-                            <a
-                              href={lead.liveUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-sm text-accent hover:underline"
-                            >
-                              Live <ArrowUpRight className="h-3.5 w-3.5" />
-                            </a>
-                          ) : null}
-                          {lead.repoUrl ? (
-                            <a
-                              href={lead.repoUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-sm text-muted hover:text-text"
-                            >
-                              <GithubIcon className="h-3.5 w-3.5" /> Code
-                            </a>
-                          ) : null}
-                        </div>
-                      ) : null}
+                      <div className="flex flex-col p-7">
+                        <span className="mb-3 w-fit rounded-md bg-accent/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-accent">
+                          Featured
+                        </span>
+                        <h3 className="text-xl font-medium">{project.title}</h3>
+                        <p className="mt-3 text-sm leading-relaxed text-muted">{project.summary}</p>
+
+                        {project.description ? (
+                          <div className="mt-4 space-y-3 border-l border-border pl-4">
+                            {project.description.split("\n\n").filter(Boolean).map((para) => (
+                              <p key={para} className="text-sm leading-relaxed text-muted/80">
+                                {para}
+                              </p>
+                            ))}
+                          </div>
+                        ) : null}
+
+                        {splitTech(project.techStack).length > 0 ? (
+                          <div className="mt-5 flex flex-wrap gap-1.5">
+                            {splitTech(project.techStack).map((tech) => (
+                              <Tag key={tech}>{tech}</Tag>
+                            ))}
+                          </div>
+                        ) : null}
+
+                        {project.liveUrl || project.repoUrl ? (
+                          <div className="mt-6 flex items-center gap-4 border-t border-border/60 pt-5">
+                            {project.liveUrl ? (
+                              <a
+                                href={project.liveUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1 text-sm text-accent hover:underline"
+                              >
+                                Live <ArrowUpRight className="h-3.5 w-3.5" />
+                              </a>
+                            ) : null}
+                            {project.repoUrl ? (
+                              <a
+                                href={project.repoUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1 text-sm text-muted hover:text-text"
+                              >
+                                <GithubIcon className="h-3.5 w-3.5" /> Code
+                              </a>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
-                  </div>
-                </article>
-              ) : null}
+                  </article>
+                ))}
+              </div>
 
               <div className="grid gap-5 sm:grid-cols-2">
                 {rest.map((project) => (
