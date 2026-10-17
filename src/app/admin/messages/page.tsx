@@ -1,13 +1,21 @@
 import { getMessages } from "@/lib/queries";
 import { deleteMessage, markMessageRead } from "@/lib/actions";
 
+import { ActionAlert } from "@/components/admin/ActionAlert";
+
 export const dynamic = "force-dynamic";
 
-export default async function MessagesPage() {
+export default async function MessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const messages = await getMessages();
 
   return (
     <div>
+      <ActionAlert error={error} />
       <h1 className="text-2xl font-semibold tracking-tight">Messages</h1>
       <p className="mt-1 text-sm text-muted">Submissions from the contact form.</p>
 

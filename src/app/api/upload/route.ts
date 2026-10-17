@@ -1,20 +1,26 @@
+import { randomUUID } from "node:crypto";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { isAuthenticated } from "@/lib/auth";
 
+export const runtime = "nodejs";
+
 const MAX_BYTES = 4 * 1024 * 1024; // Vercel's server-upload body ceiling is 4.5MB.
 const ALLOWED = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"];
+
+const EXTENSIONS: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/svg+xml": "svg",
+};
 
 export async function POST(request: Request) {
   if (!(await isAuthenticated())) {
     return NextResponse.json({ error: "Not authorised" }, { status: 401 });
-  }
-
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json(
-      { error: "Blob storage isn't configured. Paste an image URL instead." },
-      { status: 503 },
-    );
   }
 
   const form = await request.formData();
@@ -30,10 +36,35 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Image must be under 4MB." }, { status: 400 });
   }
 
-  const blob = await put(`portfolio/${Date.now()}-${file.name}`, file, {
-    access: "public",
-    addRandomSuffix: true,
-  });
+  const filename = `${Date.now()}-${randomUUID().slice(0, 8)}.${EXTENSIONS[file.type] ?? "bin"}`;
 
-  return NextResponse.json({ url: blob.url });
+  // Production (and anywhere a Blob token exists): Vercel Blob.
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const blob = await put(`portfolio/${filename}`, file, {
+      access: "public",
+      addRandomSuffix: false,
+    });
+    return NextResponse.json({ url: blob.url, storage: "vercel-blob" });
+  }
+
+  // Vercel's filesystem is read-only, so there's no local fallback there.
+  if (process.env.VERCEL) {
+    return NextResponse.json(
+      {
+        error:
+          "Image uploads need a Blob store. Add one under Storage in the Vercel dashboard, then redeploy.",
+      },
+      { status: 503 },
+    );
+  }
+
+  // Local development: write into public/uploads and serve it statically.
+  const uploadDir = path.join(process.cwd(), "public", "uploads");
+  await mkdir(uploadDir, { recursive: true });
+  await writeFile(
+    path.join(uploadDir, filename),
+    Buffer.from(await file.arrayBuffer()),
+  );
+
+  return NextResponse.json({ url: `/uploads/${filename}`, storage: "local-disk" });
 }

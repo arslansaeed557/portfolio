@@ -3,14 +3,27 @@
  * Seeds starter content. Safe to re-run: it clears the content tables first.
  * Usage: npm run db:seed
  */
-import { neon } from "@neondatabase/serverless";
+import pg from "pg";
 
 if (!process.env.DATABASE_URL) {
   console.error("DATABASE_URL is not set. Add it to .env.local first.");
   process.exit(1);
 }
 
-const sql = neon(process.env.DATABASE_URL);
+const url = process.env.DATABASE_URL;
+const useSsl = !/sslmode=disable/.test(url) && !/@(localhost|127\.0\.0\.1|\[::1\])/.test(url);
+
+const client = new pg.Client({
+  connectionString: url,
+  ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+});
+await client.connect();
+
+/** Tagged-template helper so the statements below read like SQL. */
+const sql = (strings, ...values) => {
+  const text = strings.reduce((acc, part, i) => acc + part + (i < values.length ? `$${i + 1}` : ""), "");
+  return client.query(text, values);
+};
 
 const PROFILE = {
   name: "Arslan Saeed",
@@ -122,3 +135,4 @@ for (const project of PROJECTS) {
 }
 
 console.log(`Seeded ${SKILLS.length} skills, ${EXPERIENCES.length} roles, ${PROJECTS.length} projects.`);
+await client.end();

@@ -7,12 +7,21 @@ import bcrypt from "bcryptjs";
 import { db } from "./db";
 import { experiences, messages, profile, projects, skills } from "./schema";
 import { endSession, isAuthenticated, startSession } from "./auth";
+import { dbConfigured } from "./demo";
 
 /** Every write below goes through this first. Middleware guards the UI; this guards the data. */
 async function requireAdmin() {
   if (!(await isAuthenticated())) {
     throw new Error("Not authorised");
   }
+}
+
+/**
+ * Writes need a real database. Without one, bounce back with a readable
+ * message instead of letting the driver throw a raw connection error.
+ */
+function requireDb(returnTo: string) {
+  if (!dbConfigured()) redirect(`${returnTo}?error=nodb`);
 }
 
 function str(form: FormData, key: string): string {
@@ -74,6 +83,7 @@ export async function logout() {
 
 export async function saveProfile(form: FormData) {
   await requireAdmin();
+  requireDb("/admin/profile");
 
   const values = {
     name: str(form, "name"),
@@ -103,6 +113,7 @@ export async function saveProfile(form: FormData) {
 
 export async function saveProject(form: FormData) {
   await requireAdmin();
+  requireDb("/admin/projects");
 
   const id = num(form, "id", 0);
   const values = {
@@ -129,6 +140,7 @@ export async function saveProject(form: FormData) {
 
 export async function deleteProject(form: FormData) {
   await requireAdmin();
+  requireDb("/admin/projects");
   await db.delete(projects).where(eq(projects.id, num(form, "id")));
   refreshSite();
   redirect("/admin/projects");
@@ -138,6 +150,7 @@ export async function deleteProject(form: FormData) {
 
 export async function saveExperience(form: FormData) {
   await requireAdmin();
+  requireDb("/admin/experience");
 
   const id = num(form, "id", 0);
   const values = {
@@ -163,6 +176,7 @@ export async function saveExperience(form: FormData) {
 
 export async function deleteExperience(form: FormData) {
   await requireAdmin();
+  requireDb("/admin/experience");
   await db.delete(experiences).where(eq(experiences.id, num(form, "id")));
   refreshSite();
   redirect("/admin/experience");
@@ -172,6 +186,7 @@ export async function deleteExperience(form: FormData) {
 
 export async function createSkill(form: FormData) {
   await requireAdmin();
+  requireDb("/admin/skills");
   const name = str(form, "name");
   if (!name) redirect("/admin/skills");
 
@@ -187,6 +202,7 @@ export async function createSkill(form: FormData) {
 
 export async function deleteSkill(form: FormData) {
   await requireAdmin();
+  requireDb("/admin/skills");
   await db.delete(skills).where(eq(skills.id, num(form, "id")));
   refreshSite();
   redirect("/admin/skills");
@@ -206,6 +222,9 @@ export async function sendMessage(_prev: unknown, form: FormData) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { error: "That email address doesn't look right.", sent: false };
   }
+  if (!dbConfigured()) {
+    return { error: "Messages aren't available yet — no database connected.", sent: false };
+  }
 
   await db.insert(messages).values({ name, email, body });
   return { error: null, sent: true };
@@ -213,6 +232,7 @@ export async function sendMessage(_prev: unknown, form: FormData) {
 
 export async function markMessageRead(form: FormData) {
   await requireAdmin();
+  requireDb("/admin/messages");
   await db
     .update(messages)
     .set({ read: true })
@@ -222,6 +242,7 @@ export async function markMessageRead(form: FormData) {
 
 export async function deleteMessage(form: FormData) {
   await requireAdmin();
+  requireDb("/admin/messages");
   await db.delete(messages).where(eq(messages.id, num(form, "id")));
   revalidatePath("/admin/messages");
 }

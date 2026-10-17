@@ -2,13 +2,21 @@ import { getSkillsByCategory } from "@/lib/queries";
 import { createSkill, deleteSkill } from "@/lib/actions";
 import { inputClass } from "@/components/admin/fields";
 
+import { ActionAlert } from "@/components/admin/ActionAlert";
+
 export const dynamic = "force-dynamic";
 
-export default async function SkillsPage() {
+export default async function SkillsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const groups = await getSkillsByCategory();
 
   return (
     <div>
+      <ActionAlert error={error} />
       <h1 className="text-2xl font-semibold tracking-tight">Skills</h1>
       <p className="mt-1 text-sm text-muted">
         Grouped by category on the public page. Reuse a category name to add to that group.

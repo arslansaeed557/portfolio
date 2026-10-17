@@ -3,13 +3,21 @@ import { Plus } from "lucide-react";
 import { getExperiences } from "@/lib/queries";
 import { deleteExperience } from "@/lib/actions";
 
+import { ActionAlert } from "@/components/admin/ActionAlert";
+
 export const dynamic = "force-dynamic";
 
-export default async function ExperiencePage() {
+export default async function ExperiencePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const experiences = await getExperiences();
 
   return (
     <div>
+      <ActionAlert error={error} />
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Experience</h1>

@@ -2,18 +2,20 @@ import { getProfile } from "@/lib/queries";
 import { saveProfile } from "@/lib/actions";
 import { Field, SubmitRow, TextArea } from "@/components/admin/fields";
 import { ImageField } from "@/components/admin/ImageField";
+import { ActionAlert } from "@/components/admin/ActionAlert";
 
 export const dynamic = "force-dynamic";
 
 export default async function ProfilePage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; error?: string }>;
 }) {
   const [profile, params] = await Promise.all([getProfile(), searchParams]);
 
   return (
     <div>
+      <ActionAlert error={params.error} />
       <h1 className="text-2xl font-semibold tracking-tight">Profile</h1>
       <p className="mt-1 text-sm text-muted">Your name, headline, bio and social links.</p>
 

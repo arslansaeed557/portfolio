@@ -3,13 +3,21 @@ import { Plus } from "lucide-react";
 import { getProjects, splitTech } from "@/lib/queries";
 import { deleteProject } from "@/lib/actions";
 
+import { ActionAlert } from "@/components/admin/ActionAlert";
+
 export const dynamic = "force-dynamic";
 
-export default async function ProjectsPage() {
+export default async function ProjectsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const projects = await getProjects();
 
   return (
     <div>
+      <ActionAlert error={error} />
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
