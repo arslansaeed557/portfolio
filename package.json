@@ -11,7 +11,8 @@
     "db:seed": "node --env-file=.env.local scripts/seed.mjs",
     "hash-password": "node scripts/hash-password.mjs",
     "db:migrate": "node scripts/migrate.mjs",
-    "vercel-build": "node scripts/migrate.mjs && next build"
+    "vercel-build": "node scripts/migrate.mjs && next build",
+    "db:demo": "node --env-file=.env.local scripts/demo-content.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",

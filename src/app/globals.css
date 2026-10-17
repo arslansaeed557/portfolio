@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #0a0e14;
-  --color-surface: #11161f;
-  --color-surface-2: #161d28;
-  --color-border: #222b38;
-  --color-text: #e6edf3;
-  --color-muted: #8b98a8;
+  --color-bg: #080b11;
+  --color-surface: #0f141d;
+  --color-surface-2: #151c27;
+  --color-border: #1f2836;
+  --color-text: #e8eef6;
+  --color-muted: #8795a8;
   --color-accent: #5eead4;
   --color-accent-dim: #2dd4bf;
   --color-indigo: #818cf8;
@@ -27,31 +27,50 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Ambient glow behind the hero, purely decorative. */
+/* Ambient colour behind the hero, purely decorative. */
 .hero-glow::before {
   content: "";
   position: absolute;
-  inset: -20% 0 auto -10%;
-  height: 520px;
+  inset: -30% -10% auto -10%;
+  height: 680px;
   background:
-    radial-gradient(600px 300px at 20% 30%, rgba(94, 234, 212, 0.12), transparent 70%),
-    radial-gradient(500px 260px at 70% 10%, rgba(129, 140, 248, 0.1), transparent 70%);
+    radial-gradient(620px 320px at 18% 25%, rgba(94, 234, 212, 0.14), transparent 70%),
+    radial-gradient(560px 300px at 72% 8%, rgba(129, 140, 248, 0.13), transparent 70%),
+    radial-gradient(400px 240px at 50% 50%, rgba(45, 212, 191, 0.06), transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
 
 .grid-bg {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
   background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 75% 55% at 50% 0%, #000 40%, transparent 100%);
+}
+
+/* Gradient text for the name. */
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff 25%, #5eead4 75%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Thin accent rule under section labels. */
+.rule::after {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 2px;
+  margin-top: 0.6rem;
+  background: linear-gradient(to right, var(--color-accent), transparent);
 }
 
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -60,7 +79,8 @@ body {
 }
 
 .rise {
-  animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--delay, 0ms);
 }
 
 @media (prefers-reduced-motion: reduce) {

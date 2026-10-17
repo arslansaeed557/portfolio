@@ -10,6 +10,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import pg from "pg";
+import { applyDemoContent } from "./demo-content.mjs";
 
 const url = process.env.DATABASE_URL;
 
@@ -32,6 +33,15 @@ const db = drizzle(pool);
 console.log("[migrate] applying migrations…");
 await migrate(db, { migrationsFolder: "./drizzle" });
 console.log("[migrate] schema up to date.");
+
+// One-shot: set SEED_DEMO_CONTENT=true for a single deploy to replace all
+// content, then remove the variable so later deploys leave edits alone.
+if (process.env.SEED_DEMO_CONTENT === "true") {
+  console.log("[migrate] SEED_DEMO_CONTENT set — replacing content with demo data.");
+  await applyDemoContent(pool);
+  await pool.end();
+  process.exit(0);
+}
 
 const { rows } = await pool.query("select count(*)::int as count from profile");
 
