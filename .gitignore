@@ -43,3 +43,6 @@ next-env.d.ts
 
 # locally uploaded images (production uses Vercel Blob)
 public/uploads/
+
+# local copy of production env values
+vercel-env.local.txt
