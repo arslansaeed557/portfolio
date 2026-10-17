@@ -32,7 +32,7 @@ export function ImageField({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Upload failed");
       setUrl(data.url);
-      setStatus("Uploaded");
+      setStatus("Uploaded — click Save below to apply it.");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Upload failed");
     } finally {
@@ -94,7 +94,7 @@ export function ImageField({
         className={`${inputClass} mt-3`}
       />
 
-      {status ? <p className="mt-1 text-xs text-muted">{status}</p> : null}
+      {status ? <p className="mt-1 text-xs text-accent">{status}</p> : null}
     </div>
   );
 }

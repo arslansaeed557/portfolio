@@ -61,9 +61,20 @@ export default async function Home() {
                 Available for new opportunities
               </p>
 
-              <h1 className="max-w-3xl text-4xl font-semibold leading-[1.1] tracking-tight sm:text-6xl">
-                {profile.name}
-              </h1>
+              <div className="flex items-center gap-5">
+                {profile.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={profile.avatarUrl}
+                    alt={profile.name}
+                    className="h-20 w-20 shrink-0 rounded-full border border-border object-cover sm:h-24 sm:w-24"
+                  />
+                ) : null}
+
+                <h1 className="max-w-3xl text-4xl font-semibold leading-[1.1] tracking-tight sm:text-6xl">
+                  {profile.name}
+                </h1>
+              </div>
 
               <p className="mt-4 max-w-2xl text-lg text-accent sm:text-xl">{profile.headline}</p>
 
