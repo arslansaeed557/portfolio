@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Briefcase, FolderGit2, Inbox, LayoutDashboard, LogOut, Sparkles, User } from "lucide-react";
 import { isAuthenticated } from "@/lib/auth";
 import { logout } from "@/lib/actions";
+import { DbNotice } from "@/components/admin/DbNotice";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", Icon: LayoutDashboard },
@@ -51,7 +52,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </aside>
 
       <main className="flex-1 overflow-x-hidden">
-        <div className="mx-auto max-w-3xl px-6 py-10">{children}</div>
+        <div className="mx-auto max-w-3xl px-6 py-10">
+          <DbNotice />
+          {children}
+        </div>
       </main>
     </div>
   );
