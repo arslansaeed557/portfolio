@@ -4,6 +4,7 @@ import {
   Gauge,
   Mail,
   MapPin,
+  Phone,
   Server,
 } from "lucide-react";
 import { Nav } from "@/components/Nav";
@@ -186,14 +187,32 @@ export default async function Home() {
               </div>
             </div>
 
-            {profile.location ? (
-              <p
-                className="rise mt-7 inline-flex items-center gap-1.5 text-sm text-muted"
-                style={{ "--delay": "320ms" } as React.CSSProperties}
-              >
-                <MapPin className="h-3.5 w-3.5" /> {profile.location}
-              </p>
-            ) : null}
+            <div
+              className="rise mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted"
+              style={{ "--delay": "320ms" } as React.CSSProperties}
+            >
+              {profile.location ? (
+                <span className="inline-flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5" /> {profile.location}
+                </span>
+              ) : null}
+              {profile.email ? (
+                <a
+                  href={`mailto:${profile.email}`}
+                  className="inline-flex items-center gap-1.5 transition hover:text-accent"
+                >
+                  <Mail className="h-3.5 w-3.5" /> {profile.email}
+                </a>
+              ) : null}
+              {profile.phone ? (
+                <a
+                  href={`tel:${profile.phone.replace(/[^+\d]/g, "")}`}
+                  className="inline-flex items-center gap-1.5 transition hover:text-accent"
+                >
+                  <Phone className="h-3.5 w-3.5" /> {profile.phone}
+                </a>
+              ) : null}
+            </div>
 
             {/* stat strip */}
             <dl
@@ -465,6 +484,45 @@ export default async function Home() {
               title="Let's talk"
               blurb="Open to senior backend and AI engineering roles, and to interesting contract work."
             />
+
+            {profile.email || profile.phone ? (
+              <div className="mb-10 grid gap-3 sm:grid-cols-2">
+                {profile.email ? (
+                  <a
+                    href={`mailto:${profile.email}`}
+                    className="group flex items-center gap-3.5 rounded-xl border border-border bg-surface p-4 transition hover:border-accent/40"
+                  >
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent ring-1 ring-accent/20">
+                      <Mail className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-xs text-muted">Email</span>
+                      <span className="block truncate text-sm text-text transition group-hover:text-accent">
+                        {profile.email}
+                      </span>
+                    </span>
+                  </a>
+                ) : null}
+
+                {profile.phone ? (
+                  <a
+                    href={`tel:${profile.phone.replace(/[^+\d]/g, "")}`}
+                    className="group flex items-center gap-3.5 rounded-xl border border-border bg-surface p-4 transition hover:border-accent/40"
+                  >
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent ring-1 ring-accent/20">
+                      <Phone className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-xs text-muted">Phone</span>
+                      <span className="block truncate text-sm text-text transition group-hover:text-accent">
+                        {profile.phone}
+                      </span>
+                    </span>
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
+
             <ContactForm />
           </div>
         </section>

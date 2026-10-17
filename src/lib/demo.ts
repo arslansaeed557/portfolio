@@ -15,6 +15,7 @@ export const DEMO_PROFILE: Profile = {
   bio: "Senior software engineer with 7+ years building production systems across Ruby on Rails, Node.js and Python. I design services that stay fast and predictable as traffic grows, and I build AI features — RAG pipelines, retrieval and evaluation — that hold up outside a demo.",
   location: "Pakistan",
   email: "arslan@codingcops.com",
+  phone: "+92 300 0000000",
   githubUrl: "https://github.com/",
   linkedinUrl: "https://linkedin.com/in/",
   twitterUrl: null,

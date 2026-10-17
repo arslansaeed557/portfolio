@@ -15,6 +15,7 @@ export const profile = pgTable("profile", {
   bio: text("bio").notNull(),
   location: text("location"),
   email: text("email"),
+  phone: text("phone"),
   githubUrl: text("github_url"),
   linkedinUrl: text("linkedin_url"),
   twitterUrl: text("twitter_url"),

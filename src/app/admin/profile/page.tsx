@@ -45,6 +45,13 @@ export default async function ProfilePage({
             defaultValue={profile.yearsExperience}
           />
           <Field label="Email" name="email" type="email" defaultValue={profile.email} />
+          <Field
+            label="Phone"
+            name="phone"
+            defaultValue={profile.phone}
+            placeholder="+92 300 1234567"
+            hint="Shown publicly in the contact section."
+          />
           <Field label="Résumé URL" name="resumeUrl" defaultValue={profile.resumeUrl} />
           <Field label="GitHub URL" name="githubUrl" defaultValue={profile.githubUrl} />
           <Field label="LinkedIn URL" name="linkedinUrl" defaultValue={profile.linkedinUrl} />

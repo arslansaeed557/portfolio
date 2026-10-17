@@ -91,6 +91,7 @@ export async function saveProfile(form: FormData) {
     bio: str(form, "bio"),
     location: optional(form, "location"),
     email: optional(form, "email"),
+    phone: optional(form, "phone"),
     githubUrl: optional(form, "githubUrl"),
     linkedinUrl: optional(form, "linkedinUrl"),
     twitterUrl: optional(form, "twitterUrl"),

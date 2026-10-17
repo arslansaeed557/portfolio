@@ -18,6 +18,7 @@ const PROFILE = {
   bio: "I build backend systems that stay calm under load. Seven years across Ruby on Rails, Node.js and Python, mostly on products where traffic grew faster than the architecture was designed for — and where someone had to fix that without downtime. Lately I spend most of my time on retrieval and LLM systems that have to survive real users, not just a demo.",
   location: "Lahore, Pakistan · Remote",
   email: "arslan@codingcops.com",
+  phone: "+92 300 0000000",
   github_url: "https://github.com/arslansaeed557",
   linkedin_url: "https://linkedin.com/in/arslansaeed",
   years_experience: 7,
@@ -142,14 +143,14 @@ export async function applyDemoContent(client) {
   await client.query("DELETE FROM projects");
 
   await client.query(
-    `INSERT INTO profile (id, name, headline, bio, location, email, github_url, linkedin_url, years_experience)
-     VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8)
+    `INSERT INTO profile (id, name, headline, bio, location, email, phone, github_url, linkedin_url, years_experience)
+     VALUES (1,$1,$2,$3,$4,$5,$6,$7,$8,$9)
      ON CONFLICT (id) DO UPDATE SET
        name=EXCLUDED.name, headline=EXCLUDED.headline, bio=EXCLUDED.bio,
-       location=EXCLUDED.location, email=EXCLUDED.email, github_url=EXCLUDED.github_url,
+       location=EXCLUDED.location, email=EXCLUDED.email, phone=EXCLUDED.phone, github_url=EXCLUDED.github_url,
        linkedin_url=EXCLUDED.linkedin_url, years_experience=EXCLUDED.years_experience`,
     [PROFILE.name, PROFILE.headline, PROFILE.bio, PROFILE.location, PROFILE.email,
-     PROFILE.github_url, PROFILE.linkedin_url, PROFILE.years_experience],
+     PROFILE.phone, PROFILE.github_url, PROFILE.linkedin_url, PROFILE.years_experience],
   );
 
   for (const [name, category, order] of SKILLS) {
