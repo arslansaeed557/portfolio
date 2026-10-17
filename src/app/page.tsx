@@ -323,13 +323,21 @@ export default async function Home() {
                         <p className="mt-3 text-sm leading-relaxed text-muted">{project.summary}</p>
 
                         {project.description ? (
-                          <div className="mt-4 space-y-3 border-l border-border pl-4">
-                            {project.description.split("\n\n").filter(Boolean).map((para) => (
-                              <p key={para} className="text-sm leading-relaxed text-muted">
-                                {para}
-                              </p>
-                            ))}
-                          </div>
+                          <ul className="mt-4 space-y-2">
+                            {project.description
+                              .split("\n")
+                              .map((line) => line.replace(/^[-•*]\s*/, "").trim())
+                              .filter(Boolean)
+                              .map((point) => (
+                                <li
+                                  key={point}
+                                  className="flex gap-2.5 text-sm leading-relaxed text-muted"
+                                >
+                                  <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-accent/60" />
+                                  {point}
+                                </li>
+                              ))}
+                          </ul>
                         ) : null}
 
                         {splitTech(project.techStack).length > 0 ? (

@@ -22,7 +22,7 @@ export function ProjectForm({ project }: { project?: Project | null }) {
         name="description"
         defaultValue={project?.description}
         rows={5}
-        hint="Optional longer write-up."
+        hint="Optional. One point per line — each line renders as a bullet."
       />
       <Field
         label="Tech stack"
