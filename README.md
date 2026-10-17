@@ -23,49 +23,65 @@ re-checks the session server-side before touching the database.
 
 ## Local setup
 
-1. **Create a Neon database** at [neon.tech](https://neon.tech) (free tier) and
-   copy the connection string.
+A Postgres container is already running for development:
 
-2. **Fill in `.env.local`:**
+```bash
+docker start portfolio-pg     # if it isn't running
+```
 
-   ```
-   DATABASE_URL="postgresql://…@….neon.tech/neondb?sslmode=require"
-   SESSION_SECRET="…"              # already generated for you
-   ADMIN_PASSWORD_HASH=""          # see step 3
-   ```
+`.env.local` points at it (`localhost:5433`). To recreate it from scratch:
 
-3. **Set your admin password:**
+```bash
+docker run -d --name portfolio-pg \
+  -e POSTGRES_USER=portfolio \
+  -e POSTGRES_PASSWORD=portfolio_dev_pw \
+  -e POSTGRES_DB=portfolio_dev \
+  -p 5433:5432 postgres:16
+```
 
-   ```bash
-   npm run hash-password -- "your-password-here"
-   ```
+Then create the tables, seed starter content, and run it:
 
-   Paste the printed hash into `ADMIN_PASSWORD_HASH`, **escaping each `$` as
-   `\$`** — dotenv treats a bare `$` as a variable reference and would mangle
-   the hash, making every login fail with "Incorrect password". In the Vercel
-   dashboard, paste the same hash *unescaped*; the app accepts either form.
+```bash
+npm run db:push
+npm run db:seed
+npm run dev
+```
 
-4. **Create the tables and seed starter content:**
+Site at http://localhost:8004, admin at http://localhost:8004/admin.
 
-   ```bash
-   npm run db:push
-   npm run db:seed
-   ```
+To set a different admin password:
 
-5. **Run it:**
+```bash
+npm run hash-password -- "your-password-here"
+```
 
-   ```bash
-   npm run dev
-   ```
+Paste the printed hash into `ADMIN_PASSWORD_HASH`, **escaping each `$` as
+`\$`** — dotenv treats a bare `$` as a variable reference and would mangle the
+hash, making every login fail with "Incorrect password". In the Vercel
+dashboard, paste the same hash *unescaped*; the app accepts either form.
 
-   Site at http://localhost:8004, admin at http://localhost:8004/admin.
+## Where images are stored
+
+| Environment | Storage | URL |
+| --- | --- | --- |
+| Local | `public/uploads/` on disk (gitignored) | `/uploads/<file>` |
+| Vercel | Vercel Blob | `https://<store>.public.blob.vercel-storage.com/…` |
+
+The upload route picks Blob whenever `BLOB_READ_WRITE_TOKEN` is set, and falls
+back to disk otherwise. Vercel's filesystem is read-only, so **a Blob store is
+required in production** — without it the upload button returns a clear error
+and you can paste an image URL instead.
+
+Images uploaded locally stay on your machine. They won't appear on the
+deployed site, so re-upload them there (or paste a public URL).
 
 ## Deploying to Vercel
 
 1. Push this repo to GitHub.
 2. In Vercel, **Add New → Project** and import the repo.
 3. Under **Storage**, add the **Neon** integration (or paste your existing
-   `DATABASE_URL`). Vercel injects the variable automatically.
+   `DATABASE_URL`). Vercel injects the variable automatically. The app uses the
+   standard `pg` driver, so a normal Neon connection string works as-is.
 4. Under **Storage**, add **Blob** if you want image uploads. This injects
    `BLOB_READ_WRITE_TOKEN`.
 5. Add the remaining environment variables in **Settings → Environment Variables**:
