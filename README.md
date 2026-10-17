@@ -40,7 +40,10 @@ re-checks the session server-side before touching the database.
    npm run hash-password -- "your-password-here"
    ```
 
-   Paste the printed hash into `ADMIN_PASSWORD_HASH`.
+   Paste the printed hash into `ADMIN_PASSWORD_HASH`, **escaping each `$` as
+   `\$`** — dotenv treats a bare `$` as a variable reference and would mangle
+   the hash, making every login fail with "Incorrect password". In the Vercel
+   dashboard, paste the same hash *unescaped*; the app accepts either form.
 
 4. **Create the tables and seed starter content:**
 

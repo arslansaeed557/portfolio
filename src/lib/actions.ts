@@ -36,9 +36,20 @@ function refreshSite() {
 
 /* ---------------------------------------------------------------- auth --- */
 
+/**
+ * Bcrypt hashes contain `$`, which dotenv expands as a variable reference, so
+ * `.env.local` has to escape them as `\$`. Vercel stores values literally and
+ * needs the unescaped form. Accept either by unescaping here.
+ */
+function adminHash(): string | undefined {
+  const raw = process.env.ADMIN_PASSWORD_HASH?.trim();
+  if (!raw) return undefined;
+  return raw.replace(/\\\$/g, "$");
+}
+
 export async function login(_prev: unknown, form: FormData) {
   const password = str(form, "password");
-  const hash = process.env.ADMIN_PASSWORD_HASH;
+  const hash = adminHash();
 
   if (!hash) {
     return { error: "ADMIN_PASSWORD_HASH is not set on the server." };
