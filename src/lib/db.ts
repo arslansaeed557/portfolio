@@ -4,11 +4,21 @@ import * as schema from "./schema";
 
 let client: NodePgDatabase<typeof schema> | null = null;
 
-/** Neon and other hosted providers need TLS; a local socket/host does not. */
-function needsSsl(url: string): boolean {
-  if (/sslmode=disable/.test(url)) return false;
-  if (/sslmode=require|sslmode=verify/.test(url)) return true;
-  return !/@(localhost|127\.0\.0\.1|\[::1\])/.test(url);
+/**
+ * Neon and other hosted providers need TLS; a local socket/host does not.
+ *
+ * sslmode is stripped from the URL and TLS configured explicitly: pg warns on
+ * every connection that it currently coerces sslmode=require to verify-full
+ * and will change that in a future major version.
+ */
+function sslSettings(url: string): { url: string; ssl?: { rejectUnauthorized: boolean } } {
+  if (/sslmode=disable/.test(url)) return { url };
+  if (/@(localhost|127\.0\.0\.1|\[::1\])/.test(url)) return { url };
+
+  const cleaned = url.replace(/([?&])sslmode=[^&]*&?/g, "$1").replace(/[?&]$/, "");
+
+  // Verify the server certificate against the system CA store.
+  return { url: cleaned, ssl: { rejectUnauthorized: true } };
 }
 
 /**
@@ -28,9 +38,11 @@ function getDb(): NodePgDatabase<typeof schema> {
     );
   }
 
+  const { url: connectionString, ssl } = sslSettings(url);
+
   const pool = new Pool({
-    connectionString: url,
-    ssl: needsSsl(url) ? { rejectUnauthorized: false } : undefined,
+    connectionString,
+    ssl,
     max: 3, // serverless functions are short-lived; keep the pool small
   });
 

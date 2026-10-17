@@ -15,7 +15,7 @@ const useSsl = !/sslmode=disable/.test(url) && !/@(localhost|127\.0\.0\.1|\[::1\
 
 const client = new pg.Client({
   connectionString: url,
-  ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+  ssl: useSsl ? { rejectUnauthorized: true } : undefined,
 });
 await client.connect();
 

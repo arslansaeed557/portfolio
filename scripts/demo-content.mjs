@@ -193,8 +193,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     !/sslmode=disable/.test(url) && !/@(localhost|127\.0\.0\.1|\[::1\])/.test(url);
 
   const client = new pg.Client({
-    connectionString: url,
-    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+    connectionString: url.replace(/([?&])sslmode=[^&]*&?/g, "$1").replace(/[?&]$/, ""),
+    ssl: useSsl ? { rejectUnauthorized: true } : undefined,
   });
   await client.connect();
   await applyDemoContent(client);

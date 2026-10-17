@@ -19,12 +19,31 @@ if (!url) {
   process.exit(0);
 }
 
-const useSsl =
-  !/sslmode=disable/.test(url) && !/@(localhost|127\.0\.0\.1|\[::1\])/.test(url);
+/**
+ * Neon and other hosted providers need TLS; a local socket/host does not.
+ *
+ * The sslmode parameter is stripped from the URL and TLS configured
+ * explicitly: pg warns that it currently coerces sslmode=require to
+ * verify-full and will change that in a future major, and leaving the
+ * parameter in logs that warning on every request.
+ */
+function sslSettings(url) {
+  if (/sslmode=disable/.test(url)) return { url, ssl: undefined };
+  if (/@(localhost|127\.0\.0\.1|\[::1\])/.test(url)) return { url, ssl: undefined };
+
+  const cleaned = url
+    .replace(/([?&])sslmode=[^&]*&?/g, "$1")
+    .replace(/[?&]$/, "");
+
+  // Verify the server certificate against the system CA store.
+  return { url: cleaned, ssl: { rejectUnauthorized: true } };
+}
+
+const { url: connectionString, ssl } = sslSettings(url);
 
 const pool = new pg.Pool({
-  connectionString: url,
-  ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+  connectionString,
+  ssl,
   max: 1,
 });
 

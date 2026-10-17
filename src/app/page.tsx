@@ -301,11 +301,13 @@ export default async function Home() {
                       <div className={index % 2 === 1 ? "md:order-2" : undefined}>
                         {project.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={project.imageUrl}
-                            alt={project.title}
-                            className="h-56 w-full object-cover md:h-full"
-                          />
+                          <div className="flex h-56 w-full items-center justify-center bg-surface-2 p-8 md:h-full">
+                            <img
+                              src={project.imageUrl}
+                              alt={project.title}
+                              className="max-h-full max-w-full object-contain"
+                            />
+                          </div>
                         ) : (
                           <div className="hero-glow relative hidden h-full min-h-56 overflow-hidden bg-surface-2 md:block">
                             <div className="grid-bg absolute inset-0" />
@@ -323,7 +325,7 @@ export default async function Home() {
                         {project.description ? (
                           <div className="mt-4 space-y-3 border-l border-border pl-4">
                             {project.description.split("\n\n").filter(Boolean).map((para) => (
-                              <p key={para} className="text-sm leading-relaxed text-muted/80">
+                              <p key={para} className="text-sm leading-relaxed text-muted">
                                 {para}
                               </p>
                             ))}
@@ -376,11 +378,13 @@ export default async function Home() {
                   >
                     {project.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={project.imageUrl}
-                        alt={project.title}
-                        className="h-44 w-full object-cover"
-                      />
+                      <div className="flex h-44 w-full items-center justify-center bg-surface-2 p-6">
+                        <img
+                          src={project.imageUrl}
+                          alt={project.title}
+                          className="max-h-full max-w-full object-contain"
+                        />
+                      </div>
                     ) : null}
 
                     <div className="flex flex-1 flex-col p-6">
