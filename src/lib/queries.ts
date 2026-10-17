@@ -21,10 +21,12 @@ export async function getProfile(): Promise<Profile> {
 
 export async function getProjects(): Promise<Project[]> {
   if (!dbConfigured()) return DEMO_PROJECTS;
+  // Ordered purely by sortOrder so the admin list matches the public page;
+  // `featured` controls how a project is presented, not where it sits.
   return db
     .select()
     .from(projects)
-    .orderBy(desc(projects.featured), asc(projects.sortOrder), desc(projects.createdAt));
+    .orderBy(asc(projects.sortOrder), desc(projects.createdAt));
 }
 
 export async function getProject(id: number): Promise<Project | null> {

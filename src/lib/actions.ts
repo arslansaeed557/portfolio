@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { db } from "./db";
 import { experiences, messages, profile, projects, skills } from "./schema";
@@ -207,6 +207,65 @@ export async function deleteSkill(form: FormData) {
   await db.delete(skills).where(eq(skills.id, num(form, "id")));
   refreshSite();
   redirect("/admin/skills");
+}
+
+
+/* ------------------------------------------------------------ ordering --- */
+
+/**
+ * Moves a row one place up or down and renumbers the whole list, so the admin
+ * order and the public order always match without hand-edited numbers.
+ *
+ * One action handles both tables because Next only binds a server action to a
+ * form when the reference is static — picking between two actions at runtime
+ * leaves the form submitting as a plain GET.
+ */
+export async function moveItem(form: FormData) {
+  await requireAdmin();
+
+  const kind = str(form, "kind");
+  const listPath = kind === "experience" ? "/admin/experience" : "/admin/projects";
+  requireDb(listPath);
+
+  const id = num(form, "id");
+  const direction = str(form, "direction");
+
+  const rows =
+    kind === "experience"
+      ? await db
+          .select({ id: experiences.id })
+          .from(experiences)
+          .orderBy(asc(experiences.sortOrder))
+      : await db
+          .select({ id: projects.id })
+          .from(projects)
+          .orderBy(asc(projects.sortOrder), desc(projects.createdAt));
+
+  const index = rows.findIndex((row) => row.id === id);
+  const target = direction === "up" ? index - 1 : index + 1;
+
+  if (index !== -1 && target >= 0 && target < rows.length) {
+    const next = [...rows];
+    [next[index], next[target]] = [next[target], next[index]];
+
+    for (const [position, row] of next.entries()) {
+      if (kind === "experience") {
+        await db
+          .update(experiences)
+          .set({ sortOrder: position + 1 })
+          .where(eq(experiences.id, row.id));
+      } else {
+        await db
+          .update(projects)
+          .set({ sortOrder: position + 1 })
+          .where(eq(projects.id, row.id));
+      }
+    }
+
+    refreshSite();
+  }
+
+  redirect(listPath);
 }
 
 /* ------------------------------------------------------------ messages --- */

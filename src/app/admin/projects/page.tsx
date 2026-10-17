@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { getProjects, splitTech } from "@/lib/queries";
 import { deleteProject } from "@/lib/actions";
+import { ReorderButtons } from "@/components/admin/ReorderButtons";
 
 import { ActionAlert } from "@/components/admin/ActionAlert";
 
@@ -21,7 +22,9 @@ export default async function ProjectsPage({
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
-          <p className="mt-1 text-sm text-muted">{projects.length} total</p>
+          <p className="mt-1 text-sm text-muted">
+            {projects.length} total · use the arrows to reorder
+          </p>
         </div>
         <Link
           href="/admin/projects/new"
@@ -38,12 +41,20 @@ export default async function ProjectsPage({
           </p>
         ) : null}
 
-        {projects.map((project) => (
+        {projects.map((project, index) => (
           <div
             key={project.id}
             className="flex items-center justify-between gap-4 rounded-xl border border-border bg-surface p-4"
           >
-            <div className="min-w-0">
+            <ReorderButtons
+              id={project.id}
+              kind="project"
+              isFirst={index === 0}
+              isLast={index === projects.length - 1}
+              label={project.title}
+            />
+
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <h2 className="truncate font-medium">{project.title}</h2>
                 {project.featured ? (

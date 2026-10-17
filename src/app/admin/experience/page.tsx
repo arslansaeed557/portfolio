@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { getExperiences } from "@/lib/queries";
 import { deleteExperience } from "@/lib/actions";
+import { ReorderButtons } from "@/components/admin/ReorderButtons";
 
 import { ActionAlert } from "@/components/admin/ActionAlert";
 
@@ -21,7 +22,9 @@ export default async function ExperiencePage({
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Experience</h1>
-          <p className="mt-1 text-sm text-muted">{experiences.length} roles</p>
+          <p className="mt-1 text-sm text-muted">
+            {experiences.length} roles · use the arrows to reorder
+          </p>
         </div>
         <Link
           href="/admin/experience/new"
@@ -38,12 +41,20 @@ export default async function ExperiencePage({
           </p>
         ) : null}
 
-        {experiences.map((job) => (
+        {experiences.map((job, index) => (
           <div
             key={job.id}
             className="flex items-center justify-between gap-4 rounded-xl border border-border bg-surface p-4"
           >
-            <div className="min-w-0">
+            <ReorderButtons
+              id={job.id}
+              kind="experience"
+              isFirst={index === 0}
+              isLast={index === experiences.length - 1}
+              label={job.role}
+            />
+
+            <div className="min-w-0 flex-1">
               <h2 className="truncate font-medium">
                 {job.role} <span className="text-muted">at</span> {job.company}
               </h2>
