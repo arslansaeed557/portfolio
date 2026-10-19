@@ -35,10 +35,25 @@ export function IntroVideo({
   );
 
   /* ----------------------------------------------------- hosted embeds --- */
+  const still = poster ?? avatarUrl ?? null;
+
   if (video.kind === "embed") {
     return (
       <div className="relative overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl shadow-black/40">
         <div className="relative aspect-video">
+          {still ? (
+            <>
+              {/* Sits behind the player, so it shows while the embed loads. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={still}
+                alt={`${name} — introduction`}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <span className="absolute inset-0 bg-bg/30" />
+            </>
+          ) : null}
+
           <iframe
             // Remounts when the source changes, so the swap to sound restarts it.
             key={muted ? "muted" : "sound"}
@@ -70,7 +85,7 @@ export function IntroVideo({
       <video
         ref={ref}
         src={video.src}
-        poster={poster ?? undefined}
+        poster={still ?? undefined}
         autoPlay
         muted
         loop
