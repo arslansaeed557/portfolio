@@ -8,7 +8,16 @@ import { isAuthenticated } from "@/lib/auth";
 export const runtime = "nodejs";
 
 const MAX_BYTES = 4 * 1024 * 1024; // Vercel's server-upload body ceiling is 4.5MB.
-const ALLOWED = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"];
+const ALLOWED = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+  "image/svg+xml",
+  "video/mp4",
+  "video/webm",
+  "video/quicktime",
+];
 
 const EXTENSIONS: Record<string, string> = {
   "image/png": "png",
@@ -16,6 +25,9 @@ const EXTENSIONS: Record<string, string> = {
   "image/webp": "webp",
   "image/gif": "gif",
   "image/svg+xml": "svg",
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+  "video/quicktime": "mov",
 };
 
 export async function POST(request: Request) {
@@ -30,10 +42,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No file received." }, { status: 400 });
   }
   if (!ALLOWED.includes(file.type)) {
-    return NextResponse.json({ error: "Only image files are allowed." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Only image and video files are allowed." },
+      { status: 400 },
+    );
   }
   if (file.size > MAX_BYTES) {
-    return NextResponse.json({ error: "Image must be under 4MB." }, { status: 400 });
+    return NextResponse.json(
+      {
+        error:
+          "File must be under 4MB — Vercel caps server uploads. For a longer video, host it on YouTube, Vimeo or Loom and paste the link instead.",
+      },
+      { status: 400 },
+    );
   }
 
   const filename = `${Date.now()}-${randomUUID().slice(0, 8)}.${EXTENSIONS[file.type] ?? "bin"}`;

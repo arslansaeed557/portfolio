@@ -21,6 +21,8 @@ export const profile = pgTable("profile", {
   twitterUrl: text("twitter_url"),
   resumeUrl: text("resume_url"),
   avatarUrl: text("avatar_url"),
+  /** YouTube/Vimeo/Loom link, or a direct video file URL. */
+  introVideoUrl: text("intro_video_url"),
   yearsExperience: integer("years_experience").default(7),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

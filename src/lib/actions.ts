@@ -97,6 +97,7 @@ export async function saveProfile(form: FormData) {
     twitterUrl: optional(form, "twitterUrl"),
     resumeUrl: optional(form, "resumeUrl"),
     avatarUrl: optional(form, "avatarUrl"),
+    introVideoUrl: optional(form, "introVideoUrl"),
     yearsExperience: num(form, "yearsExperience", 7),
     updatedAt: new Date(),
   };

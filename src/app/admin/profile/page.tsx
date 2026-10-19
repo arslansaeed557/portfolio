@@ -60,6 +60,14 @@ export default async function ProfilePage({
 
         <ImageField name="avatarUrl" label="Avatar" defaultValue={profile.avatarUrl} />
 
+        <Field
+          label="Intro video"
+          name="introVideoUrl"
+          defaultValue={profile.introVideoUrl}
+          placeholder="https://youtu.be/… or https://www.loom.com/share/…"
+          hint="YouTube, Vimeo or Loom link, or a direct .mp4 URL. It autoplays muted at the top of the page with a button to turn sound on. Leave blank to hide it."
+        />
+
         <SubmitRow />
       </form>
     </div>
