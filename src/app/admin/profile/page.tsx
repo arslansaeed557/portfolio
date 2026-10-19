@@ -65,7 +65,13 @@ export default async function ProfilePage({
           name="introVideoUrl"
           defaultValue={profile.introVideoUrl}
           placeholder="https://youtu.be/… or https://www.loom.com/share/…"
-          hint="YouTube, Vimeo or Loom link, or a direct .mp4 URL. It autoplays muted at the top of the page with a button to turn sound on. Leave blank to hide it."
+          hint="YouTube, Vimeo or Loom link, or a direct .mp4 URL. Shown at the top of the page. Leave blank to hide it."
+        />
+
+        <ImageField
+          name="introVideoPoster"
+          label="Video poster"
+          defaultValue={profile.introVideoPoster}
         />
 
         <SubmitRow />

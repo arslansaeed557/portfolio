@@ -1,18 +1,20 @@
 /**
  * Works out how to play whatever URL is pasted into the intro video field.
  *
- * Hosted players (YouTube, Vimeo, Loom) become autoplaying muted embeds;
- * anything else is treated as a direct video file and played inline, which
- * is the only case where we can offer our own sound toggle.
+ * Hosted players (YouTube, Vimeo, Loom) become embeds that are only mounted
+ * after the visitor clicks play — a click is a user gesture, which is the one
+ * thing that lets a video start *with sound*. Browsers block unmuted autoplay
+ * outright, and Loom's own docs warn its autoplay is unreliable regardless.
+ *
+ * A direct video file is different: it can autoplay muted straight away, so it
+ * does, with its own control to turn sound on.
  */
 export type IntroVideo =
   | { kind: "embed"; src: string; provider: string }
   | { kind: "file"; src: string };
 
 function youtubeId(url: URL): string | null {
-  if (url.hostname.includes("youtu.be")) {
-    return url.pathname.slice(1) || null;
-  }
+  if (url.hostname.includes("youtu.be")) return url.pathname.slice(1) || null;
   if (url.hostname.includes("youtube.com")) {
     if (url.pathname.startsWith("/embed/")) return url.pathname.split("/")[2] ?? null;
     if (url.pathname.startsWith("/shorts/")) return url.pathname.split("/")[2] ?? null;
@@ -23,11 +25,9 @@ function youtubeId(url: URL): string | null {
 
 export function parseIntroVideo(raw: string | null | undefined): IntroVideo | null {
   if (!raw) return null;
-
   const trimmed = raw.trim();
   if (!trimmed) return null;
 
-  // Relative uploads (/uploads/clip.mp4) are always files.
   if (trimmed.startsWith("/")) return { kind: "file", src: trimmed };
 
   let url: URL;
@@ -41,12 +41,9 @@ export function parseIntroVideo(raw: string | null | undefined): IntroVideo | nu
   if (yt) {
     const params = new URLSearchParams({
       autoplay: "1",
-      mute: "1",
-      loop: "1",
-      playlist: yt, // required for loop to work on a single video
-      controls: "1",
       rel: "0",
       modestbranding: "1",
+      playsinline: "1",
     });
     return {
       kind: "embed",
@@ -61,7 +58,7 @@ export function parseIntroVideo(raw: string | null | undefined): IntroVideo | nu
       return {
         kind: "embed",
         provider: "Vimeo",
-        src: `https://player.vimeo.com/video/${id}?autoplay=1&muted=1&loop=1&title=0&byline=0`,
+        src: `https://player.vimeo.com/video/${id}?autoplay=1&title=0&byline=0`,
       };
     }
   }
@@ -69,10 +66,17 @@ export function parseIntroVideo(raw: string | null | undefined): IntroVideo | nu
   if (url.hostname.includes("loom.com")) {
     const id = url.pathname.split("/").filter(Boolean).pop();
     if (id) {
+      const params = new URLSearchParams({
+        autoplay: "1",
+        hideEmbedTopBar: "true",
+        hide_owner: "true",
+        hide_share: "true",
+        hide_title: "true",
+      });
       return {
         kind: "embed",
         provider: "Loom",
-        src: `https://www.loom.com/embed/${id}?autoplay=1&muted=1`,
+        src: `https://www.loom.com/embed/${id}?${params.toString()}`,
       };
     }
   }
@@ -81,6 +85,5 @@ export function parseIntroVideo(raw: string | null | undefined): IntroVideo | nu
     return { kind: "file", src: trimmed };
   }
 
-  // Unknown host: assume it can be embedded rather than dropping it silently.
   return { kind: "embed", provider: "Video", src: trimmed };
 }

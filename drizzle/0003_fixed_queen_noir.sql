@@ -1,0 +1,1 @@
+ALTER TABLE "profile" ADD COLUMN "intro_video_poster" text;

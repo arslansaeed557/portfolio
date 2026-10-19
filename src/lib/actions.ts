@@ -98,6 +98,7 @@ export async function saveProfile(form: FormData) {
     resumeUrl: optional(form, "resumeUrl"),
     avatarUrl: optional(form, "avatarUrl"),
     introVideoUrl: optional(form, "introVideoUrl"),
+    introVideoPoster: optional(form, "introVideoPoster"),
     yearsExperience: num(form, "yearsExperience", 7),
     updatedAt: new Date(),
   };

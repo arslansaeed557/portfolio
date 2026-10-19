@@ -22,6 +22,7 @@ export const DEMO_PROFILE: Profile = {
   resumeUrl: null,
   avatarUrl: null,
   introVideoUrl: null,
+  introVideoPoster: null,
   yearsExperience: 7,
   updatedAt: new Date(),
 };

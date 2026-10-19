@@ -23,6 +23,8 @@ export const profile = pgTable("profile", {
   avatarUrl: text("avatar_url"),
   /** YouTube/Vimeo/Loom link, or a direct video file URL. */
   introVideoUrl: text("intro_video_url"),
+  /** Optional still shown before the intro video is played. */
+  introVideoPoster: text("intro_video_poster"),
   yearsExperience: integer("years_experience").default(7),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

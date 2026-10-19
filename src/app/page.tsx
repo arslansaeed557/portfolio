@@ -110,9 +110,14 @@ export default async function Home() {
                 className="rise mx-auto mb-10 max-w-xl"
                 style={{ "--delay": "0ms" } as React.CSSProperties}
               >
-                <IntroVideo video={introVideo} name={profile.name} />
+                <IntroVideo
+                  video={introVideo}
+                  name={profile.name}
+                  poster={profile.introVideoPoster}
+                  avatarUrl={profile.avatarUrl}
+                />
                 <p className="mt-3 text-center text-xs text-muted">
-                  A short introduction — turn the sound on
+                  A short introduction
                 </p>
               </div>
             ) : null}
