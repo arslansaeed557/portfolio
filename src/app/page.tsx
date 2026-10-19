@@ -104,18 +104,22 @@ export default async function Home() {
         <section className="hero-glow relative overflow-hidden">
           <div className="grid-bg absolute inset-0" />
 
-          <div className="relative mx-auto max-w-5xl px-6 pb-20 pt-24 sm:pt-32">
-            <div
-              className={
-                introVideo
-                  ? "grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]"
-                  : undefined
-              }
-            >
-              <div>
+          <div className="relative mx-auto max-w-5xl px-6 pb-20 pt-14 sm:pt-16">
+            {introVideo ? (
+              <div
+                className="rise mx-auto mb-10 max-w-xl"
+                style={{ "--delay": "0ms" } as React.CSSProperties}
+              >
+                <IntroVideo video={introVideo} name={profile.name} />
+                <p className="mt-3 text-center text-xs text-muted">
+                  A short introduction — turn the sound on
+                </p>
+              </div>
+            ) : null}
+
             <p
               className="rise mb-7 inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-3.5 py-1.5 font-mono text-xs text-muted backdrop-blur"
-              style={{ "--delay": "0ms" } as React.CSSProperties}
+              style={{ "--delay": "80ms" } as React.CSSProperties}
             >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
@@ -223,21 +227,6 @@ export default async function Home() {
                 >
                   <Phone className="h-3.5 w-3.5" /> {profile.phone}
                 </a>
-              ) : null}
-            </div>
-
-              </div>
-
-              {introVideo ? (
-                <div
-                  className="rise"
-                  style={{ "--delay": "240ms" } as React.CSSProperties}
-                >
-                  <IntroVideo video={introVideo} name={profile.name} />
-                  <p className="mt-3 text-center text-xs text-muted">
-                    A short introduction — turn the sound on
-                  </p>
-                </div>
               ) : null}
             </div>
 
